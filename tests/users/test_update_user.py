@@ -1,40 +1,27 @@
 import allure
-from helpers.helpers import Helpers, Checkers
-from helpers.constants import Constants
+from helpers.helpers import GeneralHelpers, UserHelpers, OrderHelpers
+from helpers.chekers import UserCheckers, GeneralCheckers, OrderCheckers
 
 
 class TestUpdateUser:
 
-    help = Helpers()
-    const = Constants()
-    check = Checkers()
-
-    credentials = None
-    accessToken = None
-
-    @classmethod
-    def setup_class(cls):
-
-        cls.credentials = cls.help.generate_random_user_credentials()
-        response = cls.help.create_user(cls.credentials)
-        cls.accessToken = response.json().get('accessToken')
+    help_gen = GeneralHelpers()
+    help_user = UserHelpers()
+    check_gen = GeneralCheckers()
+    check_user = UserCheckers()
 
     @allure.title('Проверка обновления пользователя с авторизацией')
-    def test_update_user_success(self):
+    def test_update_user_success(self, create_and_del_user):
 
-        new_credentials = self.help.generate_random_user_credentials()
-        response = self.help.update_user(self.accessToken, new_credentials)
+        new_credentials = self.help_gen.generate_random_user_credentials()
+        response = self.help_user.update_user(create_and_del_user['accessToken'], new_credentials)
 
-        assert self.check.update_user_answer_checker(response, new_credentials)
+        assert self.check_user.update_user_answer_checker(response, new_credentials)
 
-    @allure.title('Проверка обновления пользователя без авторизациии')
-    def test_update_user_success(self):
-        new_credentials = self.help.generate_random_user_credentials()
-        response = self.help.update_user('', new_credentials)
+    @allure.title('Проверка обновления пользователя без авторизации')
+    def test_update_user_error(self):
 
-        assert self.check.status_code_and_body_checker(response, 401, {'success': False, 'message': 'You should be authorised'})
+        new_credentials = self.help_gen.generate_random_user_credentials()
+        response = self.help_user.update_user('', new_credentials)
 
-    @classmethod
-    def teardown_class(cls):
-
-        cls.help.del_user(cls.accessToken).json()
+        assert self.check_gen.status_code_and_body_checker(response, 401, {'success': False, 'message': 'You should be authorised'})

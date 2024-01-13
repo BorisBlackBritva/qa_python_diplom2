@@ -40,3 +40,16 @@ class Constants:
             }
         }
     }
+
+    MAIN_URL = 'https://stellarburgers.nomoreparties.site/api'
+
+    URLS = {
+        'user': {
+            'create': f'{MAIN_URL}/auth/register',
+            'change_del': f'{MAIN_URL}/auth/user',
+            'login': f'{MAIN_URL}/auth/login'
+        },
+        'order': {
+            'all': f'{MAIN_URL}/orders'
+        }
+    }
